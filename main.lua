@@ -166,16 +166,45 @@ end
 
 
 ---execution---
-info("Ola")
+info("--- TESTANDO LOGS ---")
+info("Mensagem de informação regular.")
+warn("Aviso de atenção no sistema.")
+debug("Variável de depuração: valor = 42")
+success("Operação concluída com sucesso!")
 
+info("--- TESTANDO EXECUTOR & IDENTITY ---")
 printidentity()
-print(identifyexecutor())
-print(checkcaller())
+print("Nome e Versão do Executor:", identifyexecutor())
+print("Nome Direto:", getexecutorname())
+print("Call do Executor é válido?:", checkcaller())
 luaversion()
 
-print("Hello, World")
-info("Hello, World")
-warn("Hello, World")
-erro("Hello, World")
+info("--- TESTANDO ENVIRONMENT (getgenv) ---")
+local env = getgenv()
+env.MeuObjetoGlobal = "Plume System Loaded"
+print("Acessando variável do ambiente global:", getgenv().MeuObjetoGlobal)
 
+info("--- TESTANDO FILESYSTEM ---")
+
+local salvou = writefile("config_teste.txt", "Tema = Escuro\nSom = Ativado")
+if salvou then
+    success("Arquivo de teste criado com sucesso!")
+    
+    if isfile("config_teste.txt") then
+        info("Conteúdo lido do arquivo:")
+        print(readfile("config_teste.txt"))
+    end
+end
+
+info("--- TESTANDO SYSTEM & CRYPT ---")
+print("HWID do Dispositivo:", gethwid())
+print("FPS Atual do Ambiente:", getfps())
+local textoCodificado = base64encode("PlumeExecutor")
+print("Texto em Base64:", textoCodificado)
+
+info("--- TESTANDO HTTP & NETWORK ---")
 request({ Method = "GET", Url = "https://api.github.com" })
+
+info("--- TESTANDO ERRO FINAL ---")
+
+erro("Simulando uma falha crítica no ambiente!")
