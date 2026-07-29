@@ -67,6 +67,28 @@ function getgenv()
     return genv
 end
 
+function getrenv()
+    -- Retorna o ambiente global real do Lua
+    return _G
+end
+
+function getreg()
+    -- Retorna a tabela de registros interna
+    return debug.getregistry()
+end
+
+---system---
+function gethwid()
+    return "PLUME-HWID-MOCK-12345"
+end
+
+function getfps()
+    return 60 -- Simulação de FPS do ambiente
+end
+
+function isgameactive()
+    return true
+end
 
 ---filesystem---
 function writefile(filename, content)
@@ -89,6 +111,44 @@ function readfile(filename)
     return nil
 end
 
+function appendfile(filename, content)
+    local file = io.open(filename, "a")
+    if file then
+        file:write(content)
+        file:close()
+        return true
+    end
+    return false
+end
+
+function isfile(filename)
+    local file = io.open(filename, "r")
+    if file then
+        file:close()
+        return true
+    end
+    return false
+end
+
+function delfile(filename)
+    return os.remove(filename)
+end
+
+---crypt---
+local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+
+function base64encode(data)
+    return ((data:gsub('.', function(x) 
+        local r,b='',x:byte()
+        for i=8,1,-1 do r=r..(b%2^i>=2^(i-1) and '1' or '0') end
+        return r;
+    end)..'0000'):gsub('%d%d%d?%d?%d?%d?', function(x)
+        if (#x < 6) then return '' end
+        local c=0
+        for i=1,6 do c=c+(x:sub(i,i)=='1' and 2^(6-i) or 0) end
+        return b:sub(c+1,c+1)
+    end)..({ '', '==', '=' })[#data%3+1])
+end
 
 ---http---
 function request(options)
@@ -97,6 +157,11 @@ function request(options)
     local url = options.Url or "desconhecido"
     
     info("Enviando requisição " .. method .. " para " .. url)
+end
+
+function httpget(url)
+    info("Baixando dados de: " .. tostring(url))
+    return "Conteúdo simulado baixado com sucesso"
 end
 
 
