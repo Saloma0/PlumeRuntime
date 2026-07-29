@@ -207,4 +207,4 @@ request({ Method = "GET", Url = "https://api.github.com" })
 
 info("--- testando erro final ---")
 
-erro("Simulando uma falha crítica no ambiente!")
+erro("erro teste")
