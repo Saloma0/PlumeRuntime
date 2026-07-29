@@ -47,7 +47,8 @@ function warn(...)
     _write(io.stdout, "[WARN] ", ...)
 end
 
-function debug(...)
+-- Renomeado para não conflitar com a palavra global 'debug' do Lua
+function log_debug(...)
     _write(io.stdout, "[DEBUG] ", ...)
 end
 
@@ -73,9 +74,40 @@ function getrenv()
 end
 
 function getreg()
-    -- Retorna a tabela de registros interna
-    return debug.getregistry()
+    -- Checa se 'debug' é de fato uma tabela e se a função existe
+    if type(debug) == "table" and type(debug.getregistry) == "function" then
+        return debug.getregistry()
+    end
+    -- Fallback seguro para evitar que o script quebre
+    return {}
 end
+
+
+---metatable & hooks---
+function getrawmetatable(tbl)
+    if type(debug) == "table" and type(debug.getmetatable) == "function" then
+        return debug.getmetatable(tbl)
+    end
+    return getmetatable(tbl)
+end
+
+function setrawmetatable(tbl, newmt)
+    if type(debug) == "table" and type(debug.setmetatable) == "function" then
+        return debug.setmetatable(tbl, newmt)
+    end
+    return setmetatable(tbl, newmt)
+end
+
+function setreadonly(tbl, readOnly)
+    local mt = getmetatable(tbl) or {}
+    mt.__newindex = readOnly and function() error("Tabela é apenas leitura", 2) end or nil
+    setmetatable(tbl, mt)
+end
+
+function isreadonly(tbl)
+    return false
+end
+
 
 ---system---
 function gethwid()
@@ -89,6 +121,7 @@ end
 function isgameactive()
     return true
 end
+
 
 ---filesystem---
 function writefile(filename, content)
@@ -134,6 +167,24 @@ function delfile(filename)
     return os.remove(filename)
 end
 
+function makefolder(folderPath)
+    return os.execute('mkdir "' .. folderPath .. '"')
+end
+
+function delfolder(folderPath)
+    return os.execute('rmdir /s /q "' .. folderPath .. '"')
+end
+
+function isfolder(folderPath)
+    local ok, _, code = os.rename(folderPath, folderPath)
+    return ok or code == 13
+end
+
+function listfiles(folderPath)
+    return { folderPath .. "/config.json", folderPath .. "/script.lua" }
+end
+
+
 ---crypt---
 local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 
@@ -150,6 +201,7 @@ function base64encode(data)
     end)..({ '', '==', '=' })[#data%3+1])
 end
 
+
 ---http---
 function request(options)
     options = options or {}
@@ -165,11 +217,53 @@ function httpget(url)
 end
 
 
+---clipboard---
+local _clipboardCache = ""
+
+function setclipboard(text)
+    _clipboardCache = tostring(text)
+    return true
+end
+
+function getclipboard()
+    return _clipboardCache
+end
+
+
+---drawing---
+Drawing = {
+    new = function(shapeType)
+        return {
+            Visible = true,
+            Color = {255, 255, 255},
+            Position = {x = 0, y = 0},
+            Remove = function(self) self.Visible = false end
+        }
+    end
+}
+
+
+---rconsole---
+function rconsoleprint(text)
+    io.write(text)
+end
+
+function rconsoleclear()
+    os.execute("cls" or "clear")
+end
+
+function rconsolename(title)
+    if package.config:sub(1,1) == '\\' then
+        os.execute("title " .. title)
+    end
+end
+
+
 ---execution---
 info("--- testando logs ---")
 info("Mensagem de informação regular.")
 warn("Aviso de atenção no sistema.")
-debug("Variável de depuração: valor = 42")
+log_debug("Variável de depuração: valor = 42")
 success("Operação concluída com sucesso!")
 
 info("--- testando executor e identity ---")
@@ -179,13 +273,14 @@ print("Nome Direto:", getexecutorname())
 print("Call do Executor é válido?:", checkcaller())
 luaversion()
 
-info("--- testando env (getgenv) ---")
+info("--- testando env (getgenv, getrenv, getreg) ---")
 local env = getgenv()
 env.MeuObjetoGlobal = "Plume System Loaded"
 print("Acessando variável do ambiente global:", getgenv().MeuObjetoGlobal)
+print("Verificando se _G existe via getrenv:", getrenv() == _G)
+print("Tipo do Registry:", type(getreg()))
 
 info("--- testando file system ---")
-
 local salvou = writefile("config_teste.txt", "Plume on top!")
 if salvou then
     success("Arquivo de teste criado com sucesso!")
@@ -193,18 +288,50 @@ if salvou then
     if isfile("config_teste.txt") then
         info("Conteúdo lido do arquivo:")
         print(readfile("config_teste.txt"))
+        
+        appendfile("config_teste.txt", " - Atualizado")
+        print("Conteúdo após appendfile:", readfile("config_teste.txt"))
     end
 end
+
+makefolder("PlumeFolder")
+print("É pasta?:", isfolder("PlumeFolder"))
+print("Lista de arquivos:", table.concat(listfiles("PlumeFolder"), ", "))
 
 info("--- testando system e cript ---")
 print("HWID do Dispositivo:", gethwid())
 print("FPS Atual do Ambiente:", getfps())
+print("Jogo Ativo?:", isgameactive())
 local textoCodificado = base64encode("PlumeExecutor")
 print("Texto em Base64:", textoCodificado)
 
 info("--- testando http ---")
 request({ Method = "GET", Url = "https://api.github.com" })
+print("HTTP Get Simulada:", httpget("https://google.com"))
+
+info("--- testando clipboard ---")
+setclipboard("Texto Copiado para a Plume Clipboard")
+print("Conteúdo da Clipboard:", getclipboard())
+
+info("--- testando metatable & hooks ---")
+local minhaTabela = {}
+local meta = { __index = { teste = "Sucesso Metatable" } }
+setrawmetatable(minhaTabela, meta)
+print("Verificando metatable:", getrawmetatable(minhaTabela) == meta)
+print("Valor via Metatable:", minhaTabela.teste)
+
+setreadonly(minhaTabela, true)
+print("Tabela definida como readonly (isreadonly):", isreadonly(minhaTabela))
+
+info("--- testando drawing api ---")
+local desenho = Drawing.new("Square")
+print("Desenho criado. Visível?:", desenho.Visible)
+desenho:Remove()
+print("Visível após remoção?:", desenho.Visible)
+
+info("--- testando rconsole ---")
+rconsolename("Plume Executor Console")
+rconsoleprint("Imprimindo diretamente via rconsoleprint!\n")
 
 info("--- testando erro final ---")
-
 erro("erro teste")
