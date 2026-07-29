@@ -166,25 +166,25 @@ end
 
 
 ---execution---
-info("--- TESTANDO LOGS ---")
+info("--- testando logs ---")
 info("Mensagem de informação regular.")
 warn("Aviso de atenção no sistema.")
 debug("Variável de depuração: valor = 42")
 success("Operação concluída com sucesso!")
 
-info("--- TESTANDO EXECUTOR & IDENTITY ---")
+info("--- testando executor e identity ---")
 printidentity()
 print("Nome e Versão do Executor:", identifyexecutor())
 print("Nome Direto:", getexecutorname())
 print("Call do Executor é válido?:", checkcaller())
 luaversion()
 
-info("--- TESTANDO ENVIRONMENT (getgenv) ---")
+info("--- testando env (getgenv) ---")
 local env = getgenv()
 env.MeuObjetoGlobal = "Plume System Loaded"
 print("Acessando variável do ambiente global:", getgenv().MeuObjetoGlobal)
 
-info("--- TESTANDO FILESYSTEM ---")
+info("--- testando file system ---")
 
 local salvou = writefile("config_teste.txt", "Tema = Escuro\nSom = Ativado")
 if salvou then
@@ -196,15 +196,15 @@ if salvou then
     end
 end
 
-info("--- TESTANDO SYSTEM & CRYPT ---")
+info("--- testando system e cript ---")
 print("HWID do Dispositivo:", gethwid())
 print("FPS Atual do Ambiente:", getfps())
 local textoCodificado = base64encode("PlumeExecutor")
 print("Texto em Base64:", textoCodificado)
 
-info("--- TESTANDO HTTP & NETWORK ---")
+info("--- testando http ---")
 request({ Method = "GET", Url = "https://api.github.com" })
 
-info("--- TESTANDO ERRO FINAL ---")
+info("--- testando erro final ---")
 
 erro("Simulando uma falha crítica no ambiente!")
