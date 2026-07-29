@@ -186,7 +186,7 @@ print("Acessando variável do ambiente global:", getgenv().MeuObjetoGlobal)
 
 info("--- testando file system ---")
 
-local salvou = writefile("config_teste.txt", "Tema = Escuro\nSom = Ativado")
+local salvou = writefile("config_teste.txt", "Plume on top!")
 if salvou then
     success("Arquivo de teste criado com sucesso!")
     
