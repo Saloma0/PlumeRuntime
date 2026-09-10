@@ -52,7 +52,7 @@ luaversion()
 |---|---|
 | `identifyexecutor()` | `Plume`, `1.0.0` |
 | `getexecutorname()` | `Plume` |
-| `getthreadidentity()` | `8` |
+| `getthreadidentity()` | `3` |
 | `checkcaller()` | `true` |
 | `luaversion()` | `0.0.1` |
 
@@ -447,7 +447,7 @@ A typical output will look similar to:
 [SUCCESS] Operation completed successfully!
 
 [INFO] --- testing executor and identity ---
-Current identity is 8
+Current identity is 3
 
 [INFO] --- testing system and crypto ---
 HWID: PLUME-HWID-MOCK-12345
@@ -585,7 +585,7 @@ luaversion()
 |---|---|
 | `identifyexecutor()` | `Plume`, `1.0.0` |
 | `getexecutorname()` | `Plume` |
-| `getthreadidentity()` | `8` |
+| `getthreadidentity()` | `3` |
 | `checkcaller()` | `true` |
 | `luaversion()` | `0.0.1` |
 
@@ -979,7 +979,7 @@ Uma saída típica será semelhante a:
 [SUCCESS] Operação concluída com sucesso!
 
 [INFO] --- testando executor e identity ---
-Current identity is 8
+Current identity is 3
 
 [INFO] --- testando system e crypto ---
 HWID: PLUME-HWID-MOCK-12345
