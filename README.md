@@ -54,7 +54,7 @@ luaversion()
 | `getexecutorname()` | `Plume` |
 | `getthreadidentity()` | `3` |
 | `checkcaller()` | `true` |
-| `luaversion()` | `0.0.1` |
+| `luaversion()` | 5.4` |
 
 Example:
 
@@ -587,7 +587,7 @@ luaversion()
 | `getexecutorname()` | `Plume` |
 | `getthreadidentity()` | `3` |
 | `checkcaller()` | `true` |
-| `luaversion()` | `0.0.1` |
+| `luaversion()` | `5.4` |
 
 Exemplo:
 
