@@ -26,6 +26,10 @@ function luaversion()
     return _VERSION
 end
 
+function runtimeversion()
+    print("0.0.1")
+end
+
 ---logs---
 local function _write(stream, prefix, ...)
     local args = {...}
@@ -301,7 +305,8 @@ printidentity()
 print("Nome e Versão do Executor:", identifyexecutor())
 print("Nome Direto:", getexecutorname())
 print("Call do Executor é válido?:", checkcaller())
-luaversion()
+print(luaversion())
+print(runtimeversion())
 
 info("--- testando env (getgenv, getrenv, getreg) ---")
 local env = getgenv()
