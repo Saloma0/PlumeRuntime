@@ -11,7 +11,7 @@ function getexecutorname()
 end
 
 function getthreadidentity()
-    return 8
+    return 3 ---default---
 end
 
 function printidentity()
