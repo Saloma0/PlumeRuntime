@@ -23,7 +23,7 @@ function checkcaller()
 end
 
 function luaversion()
-    print("0.0.1")
+    return _VERSION
 end
 
 ---logs---
