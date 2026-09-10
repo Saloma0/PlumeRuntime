@@ -1,7 +1,6 @@
 ---setup---
 local unpack = unpack or table.unpack
 
-
 ---executor---
 function identifyexecutor()
     return "Plume", "1.0.0"
@@ -27,15 +26,12 @@ function luaversion()
     print("0.0.1")
 end
 
-
 ---logs---
 local function _write(stream, prefix, ...)
     local args = {...}
-
     for i = 1, #args do
         args[i] = tostring(args[i])
     end
-
     stream:write(prefix .. table.concat(args, " ") .. "\n")
 end
 
@@ -47,7 +43,6 @@ function warn(...)
     _write(io.stdout, "[WARN] ", ...)
 end
 
--- Renomeado para não conflitar com a palavra global 'debug' do Lua
 function log_debug(...)
     _write(io.stdout, "[DEBUG] ", ...)
 end
@@ -60,7 +55,6 @@ function erro(...)
     _write(io.stdout, "[ERRO] ", ...)
 end
 
-
 ---env---
 local genv = {}
 
@@ -69,19 +63,15 @@ function getgenv()
 end
 
 function getrenv()
-    -- Retorna o ambiente global real do Lua
     return _G
 end
 
 function getreg()
-    -- Checa se 'debug' é de fato uma tabela e se a função existe
     if type(debug) == "table" and type(debug.getregistry) == "function" then
         return debug.getregistry()
     end
-    -- Fallback seguro para evitar que o script quebre
     return {}
 end
-
 
 ---metatable & hooks---
 function getrawmetatable(tbl)
@@ -108,20 +98,18 @@ function isreadonly(tbl)
     return false
 end
 
-
 ---system---
 function gethwid()
     return "PLUME-HWID-MOCK-12345"
 end
 
 function getfps()
-    return 60 -- Simulação de FPS do ambiente
+    return 60
 end
 
 function isgameactive()
     return true
 end
-
 
 ---filesystem---
 function writefile(filename, content)
@@ -184,16 +172,15 @@ function listfiles(folderPath)
     return { folderPath .. "/config.json", folderPath .. "/script.lua" }
 end
 
-
 ---crypt---
 local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 
 function base64encode(data)
-    return ((data:gsub('.', function(x) 
+    return ((data:gsub('.', function(x)
         local r,b='',x:byte()
         for i=8,1,-1 do r=r..(b%2^i>=2^(i-1) and '1' or '0') end
         return r;
-    end)..'0000'):gsub('%d%d%d?%d?%d?%d?', function(x)
+    end)..'0000'):gsub('%d%d%d?%d?%d?', function(x)
         if (#x < 6) then return '' end
         local c=0
         for i=1,6 do c=c+(x:sub(i,i)=='1' and 2^(6-i) or 0) end
@@ -201,21 +188,67 @@ function base64encode(data)
     end)..({ '', '==', '=' })[#data%3+1])
 end
 
-
 ---http---
+local function buildHeaders(url, placeId, gameId, hwid)
+    local isLuarmor = string.find(url, "luarmor.net") or
+                      string.find(url, "luarmor") or
+                      string.find(url, "raw.githubusercontent.com")
+
+    local sessionJson = '{"GameId":"' .. tostring(gameId) .. '","PlaceId":"' .. tostring(placeId) .. '"}'
+    local exploitName = isLuarmor and "Volt" or getexecutorname()
+
+    local headers = {
+        ["User-Agent"] = exploitName,
+        ["Roblox-Session-Id"] = sessionJson,
+        ["Roblox-Place-Id"] = tostring(placeId),
+        ["Roblox-Game-Id"] = tostring(gameId),
+        ["Exploit-Identifier"] = exploitName,
+        ["Exploit-Guid"] = hwid,
+        ["Fingerprint"] = hwid,
+        ["Accept"] = "*/*"
+    }
+
+    return headers
+end
+
 function request(options)
     options = options or {}
     local method = options.Method or "GET"
     local url = options.Url or "desconhecido"
-    
+    local customHeaders = options.Headers or {}
+
+    local placeId = (game and game.PlaceId) or 0
+    local gameId = (game and game.JobId) or "00000000-0000-0000-0000-000000000000"
+    local hwid = gethwid()
+
+    local finalHeaders = buildHeaders(url, placeId, gameId, hwid)
+    for k, v in pairs(customHeaders) do
+        finalHeaders[k] = v
+    end
+
     info("Enviando requisição " .. method .. " para " .. url)
+    for key, value in pairs(finalHeaders) do
+        log_debug(key .. " : " .. tostring(value))
+    end
+
+    return {
+        Success = true,
+        StatusCode = 200,
+        StatusMessage = "OK",
+        Headers = finalHeaders,
+        Body = "Conteúdo simulado baixado com sucesso"
+    }
 end
 
-function httpget(url)
+function httpget(url, customHeaders)
     info("Baixando dados de: " .. tostring(url))
-    return "Conteúdo simulado baixado com sucesso"
+    local response = request({
+        Method = "GET",
+        Url = url,
+        Headers = customHeaders
+    })
+    return response.Body
 end
-
 
 ---clipboard---
 local _clipboardCache = ""
@@ -229,7 +262,6 @@ function getclipboard()
     return _clipboardCache
 end
 
-
 ---drawing---
 Drawing = {
     new = function(shapeType)
@@ -241,7 +273,6 @@ Drawing = {
         }
     end
 }
-
 
 ---rconsole---
 function rconsoleprint(text)
@@ -257,7 +288,6 @@ function rconsolename(title)
         os.execute("title " .. title)
     end
 end
-
 
 ---execution---
 info("--- testando logs ---")
@@ -284,7 +314,7 @@ info("--- testando file system ---")
 local salvou = writefile("config_teste.txt", "Plume on top!")
 if salvou then
     success("Arquivo de teste criado com sucesso!")
-    
+
     if isfile("config_teste.txt") then
         info("Conteúdo lido do arquivo:")
         print(readfile("config_teste.txt"))
@@ -306,7 +336,8 @@ local textoCodificado = base64encode("PlumeExecutor")
 print("Texto em Base64:", textoCodificado)
 
 info("--- testando http ---")
-request({ Method = "GET", Url = "https://api.github.com" })
+local urlTeste = "https://raw.githubusercontent.com/obiiyeuem/somefile"
+request({ Method = "GET", Url = urlTeste })
 print("HTTP Get Simulada:", httpget("https://google.com"))
 
 info("--- testando clipboard ---")
