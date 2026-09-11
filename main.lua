@@ -10,8 +10,38 @@ function getexecutorname()
     return "Plume"
 end
 
+local ThreadContext = {
+    identity = 3,
+    history = {}
+}
+
+local IdentityLevels = {
+    [0] = true,
+    [1] = true,
+    [2] = true,
+    [3] = true,
+    [4] = true,
+    [5] = true,
+    [6] = true,
+    [7] = true,
+    [8] = true
+}
+
 function getthreadidentity()
-    return 3 ---default---
+    return ThreadContext.identity
+end
+
+function setthreadidentity(identity)
+    assert(type(identity) == "number", "invalid identity type")
+    assert(IdentityLevels[identity], "invalid identity level")
+
+    table.insert(ThreadContext.history, {
+        previous = ThreadContext.identity,
+        new = identity,
+        timestamp = os.clock()
+    })
+
+    ThreadContext.identity = identity
 end
 
 function printidentity()
