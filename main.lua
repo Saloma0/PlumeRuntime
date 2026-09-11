@@ -178,6 +178,54 @@ function getscriptbytecode(script)
 end
 
 ---filesystem---
+local RUNTIME_WORKSPACE = "workspace"
+local RUNTIME_AUTOEXEC = "autoexec"
+
+local function ensureRuntimeFolders()
+    os.execute('mkdir "' .. RUNTIME_WORKSPACE .. '" 2>nul')
+    os.execute('mkdir "' .. RUNTIME_AUTOEXEC .. '" 2>nul')
+end
+
+local function getFileName(path)
+    return path:match("([^/\\]+)$")
+end
+
+local function isLuaFile(path)
+    return path:lower():match("%.lua$") ~= nil
+end
+
+function executeAutoexec()
+    ensureRuntimeFolders()
+
+    local pipe = io.popen('dir /b "' .. RUNTIME_AUTOEXEC .. '" 2>nul')
+
+    if not pipe then
+        return
+    end
+
+    for filename in pipe:lines() do
+        if isLuaFile(filename) then
+            local filepath = RUNTIME_AUTOEXEC .. "/" .. filename
+
+            info("Autoexec executando: " .. filepath)
+
+            local chunk, loadError = loadfile(filepath)
+
+            if not chunk then
+                erro("Falha ao carregar " .. filepath .. ": " .. tostring(loadError))
+            else
+                local success, runtimeError = pcall(chunk)
+
+                if not success then
+                    erro("Erro em " .. filepath .. ": " .. tostring(runtimeError))
+                end
+            end
+        end
+    end
+
+    pipe:close()
+end
+
 function writefile(filename, content)
     local file = io.open(filename, "w")
     if file then
@@ -355,6 +403,16 @@ function rconsolename(title)
     end
 end
 
+---runtime initialization---
+ensureRuntimeFolders()
+
+info("--- carregando autoexec ---")
+executeAutoexec()
+
+info("--- workspace pronto ---")
+print("Workspace:", RUNTIME_WORKSPACE)
+print("Autoexec:", RUNTIME_AUTOEXEC)
+
 ---execution---
 info("--- testando logs ---")
 info("Mensagem de informação regular.")
@@ -390,14 +448,6 @@ if salvou then
         print("Conteúdo após appendfile:", readfile("config_teste.txt"))
     end
 end
-
-makefolder("workspace")
-print("É pasta?:", isfolder("workspace"))
-print("Lista de arquivos:", table.concat(listfiles("workspace"), ", "))
-
-makefolder("autoexec")
-print("É pasta?:", isfolder("autoexec"))
-print("Lista de arquivos:", table.concat(listfiles("autoexec"), ", "))
 
 makefolder("PlumeFolder")
 print("É pasta?:", isfolder("PlumeFolder"))
