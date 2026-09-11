@@ -391,6 +391,14 @@ if salvou then
     end
 end
 
+makefolder("workspace")
+print("É pasta?:", isfolder("workspace"))
+print("Lista de arquivos:", table.concat(listfiles("workspace"), ", "))
+
+makefolder("autoexec")
+print("É pasta?:", isfolder("autoexec"))
+print("Lista de arquivos:", table.concat(listfiles("autoexec"), ", "))
+
 makefolder("PlumeFolder")
 print("É pasta?:", isfolder("PlumeFolder"))
 print("Lista de arquivos:", table.concat(listfiles("PlumeFolder"), ", "))
