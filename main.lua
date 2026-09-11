@@ -117,8 +117,24 @@ function gethwid()
     return "PLUME-HWID-MOCK-12345"
 end
 
+local fps = 0
+local frames = 0
+local lastTime = os.clock()
+
 function getfps()
-    return 60
+    return math.floor(fps)
+end
+
+function updateFPS()
+    frames = frames + 1
+
+    local now = os.clock()
+
+    if now - lastTime >= 1 then
+        fps = frames / (now - lastTime)
+        frames = 0
+        lastTime = now
+    end
 end
 
 function isgameactive()
