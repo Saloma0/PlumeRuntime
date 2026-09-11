@@ -99,6 +99,16 @@ function setreadonly(tbl, readOnly)
 end
 
 function isreadonly(tbl)
+    if type(tbl) ~= "table" then
+        return false
+    end
+
+    local mt = getmetatable(tbl)
+
+    if mt and mt.__newindex then
+        return true
+    end
+
     return false
 end
 
