@@ -171,6 +171,12 @@ function isgameactive()
     return true
 end
 
+function getscriptbytecode(script)
+    assert(type(script) == "function", "expected a function")
+
+    return string.dump(script)
+end
+
 ---filesystem---
 function writefile(filename, content)
     local file = io.open(filename, "w")
