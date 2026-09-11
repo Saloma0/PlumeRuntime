@@ -1,107 +1,134 @@
-# 🪶 PlumeRuntime Executor — Luau
+# PlumeRuntime
 
-> 🇺🇸 **English** · 🇧🇷 **Português**
+### A lightweight Luau/Lua executor-style API mock for local development and compatibility testing.
 
----
+PlumeRuntime is a **simulated runtime layer** that reproduces the behavior and interfaces of commonly encountered executor-style APIs in a controlled, local environment.
 
-# 🇺🇸 English
+It is intended for **API prototyping, compatibility testing, automated tests, demonstrations, and Lua development**.
 
-## 📖 About
-
-**Plume Executor — Mock API** is a simulated implementation of several APIs commonly found in Lua/Roblox execution environments.
-
-The project is designed for **local testing, API prototyping, demonstrations, and compatibility testing**. It provides mock implementations for executor identification, logging, environments, filesystem operations, HTTP requests, clipboard, Drawing, console functions, and more.
-
-> ⚠️ **Disclaimer:** This project is **not a real Roblox executor**. Several APIs are intentionally simulated and do not interact with Roblox or external services.
+> [!WARNING]
+> PlumeRuntime is **not a Roblox executor**. It does not inject into Roblox, execute code inside Roblox, bypass security mechanisms, or communicate with Roblox services. Most APIs are intentionally mocked or simplified.
 
 ---
 
-## ✨ Features
+## Overview
 
-- 🆔 Executor identification
-- 🧵 Thread identity simulation
-- 📝 Logging system
-- 🌎 Lua environment helpers
-- 🔧 Metatable utilities
-- 🔒 Readonly-state simulation
-- 💻 System information mocks
-- 📁 Filesystem operations
-- 🔐 Base64 encoding
-- 🌐 Simulated HTTP requests
-- 📋 In-memory clipboard
-- 🎨 Simplified Drawing API
-- 🖥️ RConsole utilities
-- 🧪 Integrated API tests
+PlumeRuntime provides a collection of modular mock APIs designed to make scripts that depend on executor-style functions easier to test outside their original environment.
+
+The runtime focuses on predictable behavior, portability, and ease of integration.
+
+### Key capabilities
+
+- Executor identification and version information
+- Thread identity simulation
+- Logging utilities
+- Global and runtime environment helpers
+- Metatable utilities
+- Read-only state simulation
+- System information mocks
+- Local filesystem operations
+- Base64 encoding
+- Simulated HTTP responses
+- In-memory clipboard
+- Simplified Drawing objects
+- Console utilities
+- Built-in API validation tests
 
 ---
 
-## 🆔 Executor API
+## Installation
+
+Clone or download the project and load the runtime in your Lua/Luau environment.
 
 ```lua
-identifyexecutor()
-getexecutorname()
-getthreadidentity()
-printidentity()
-checkcaller()
-luaversion()
+dofile("PlumeRuntime.lua")
 ```
 
-### 📌 Mock values
+> The exact loading method depends on the host environment and Lua implementation being used.
 
-| Function | Value |
-|---|---|
-| `identifyexecutor()` | `Plume`, `1.0.0` |
-| `getexecutorname()` | `Plume` |
-| `getthreadidentity()` | `3` |
-| `checkcaller()` | `true` |
-| `luaversion()` | 5.4` |
+---
 
-Example:
+## Quick Start
 
 ```lua
-printidentity()
-
 print("Executor:", getexecutorname())
-print("Identity:", getthreadidentity())
+print("Version:", identifyexecutor())
+print("Thread Identity:", getthreadidentity())
+
+info("PlumeRuntime initialized successfully.")
 ```
 
----
-
-## 📝 Logging
-
-Available functions:
-
-```lua
-info(...)
-warn(...)
-log_debug(...)
-success(...)
-erro(...)
-```
-
-Example:
-
-```lua
-info("Hello!")
-warn("Warning!")
-log_debug("Debug information")
-success("Operation completed!")
-erro("Something went wrong!")
-```
-
-Output prefixes:
+Example output:
 
 ```text
-[INFO]
-[WARN]
-[DEBUG]
-[SUCCESS]
-[ERRO]
+Executor: Plume
+Version: Plume 1.0.0
+Thread Identity: 3
+[INFO] PlumeRuntime initialized successfully.
 ```
 
 ---
 
-## 🌎 Environment
+## API Reference
+
+### Executor Information
+
+| Function | Description |
+|---|---|
+| `identifyexecutor()` | Returns the simulated executor name and version |
+| `getexecutorname()` | Returns the executor name |
+| `getthreadidentity()` | Returns the simulated thread identity |
+| `printidentity()` | Prints the current identity |
+| `checkcaller()` | Returns the simulated caller state |
+| `luaversion()` | Returns the configured Lua version |
+
+Example:
+
+```lua
+printidentity()
+
+print("Name:", getexecutorname())
+print("Identity:", getthreadidentity())
+print("Lua:", luaversion())
+```
+
+Default mock values:
+
+```text
+Executor: Plume
+Version: 1.0.0
+Identity: 3
+Caller: true
+Lua Version: 5.4
+```
+
+---
+
+### Logging
+
+PlumeRuntime includes a lightweight logging interface.
+
+```lua
+info("Informational message")
+warn("Warning message")
+log_debug("Debug message")
+success("Operation completed")
+erro("Error message")
+```
+
+Output format:
+
+```text
+[INFO] Informational message
+[WARN] Warning message
+[DEBUG] Debug message
+[SUCCESS] Operation completed
+[ERRO] Error message
+```
+
+---
+
+### Environment
 
 ```lua
 getgenv()
@@ -109,81 +136,62 @@ getrenv()
 getreg()
 ```
 
-### `getgenv()`
+#### `getgenv()`
 
-Returns a dedicated environment table:
+Returns a dedicated global environment table.
 
 ```lua
 local env = getgenv()
 
-env.MyGlobal = "Plume System Loaded"
+env.ApplicationName = "PlumeRuntime"
 
-print(getgenv().MyGlobal)
+print(getgenv().ApplicationName)
 ```
 
-### `getrenv()`
+#### `getrenv()`
 
-Returns `_G`:
+Returns the host global environment.
 
 ```lua
 print(getrenv() == _G)
 ```
 
-### `getreg()`
+#### `getreg()`
 
-Attempts to return Lua's debug registry:
+Attempts to access the Lua debug registry.
 
-```lua
-local registry = getreg()
-
-print(type(registry))
-```
-
-If `debug.getregistry()` is unavailable, an empty table is returned.
+If registry access is unavailable, an empty table is returned.
 
 ---
 
-## 🔧 Metatables & Hooks
-
-Available functions:
+### Metatables
 
 ```lua
 getrawmetatable(tbl)
-setrawmetatable(tbl, newmt)
-setreadonly(tbl, readOnly)
+setrawmetatable(tbl, metatable)
+setreadonly(tbl, state)
 isreadonly(tbl)
 ```
 
 Example:
 
 ```lua
-local myTable = {}
+local object = {}
 
-local meta = {
+setrawmetatable(object, {
     __index = {
-        test = "Metatable Success"
+        Status = "Available"
     }
-}
+})
 
-setrawmetatable(myTable, meta)
-
-print(myTable.test)
+print(object.Status)
 ```
 
-### 🔒 Readonly
-
-```lua
-setreadonly(myTable, true)
-print(isreadonly(myTable))
-```
-
-> ⚠️ `isreadonly()` currently returns `false` as a placeholder. The readonly implementation is intentionally simplified.
+> Read-only behavior is currently simulated and should not be considered a complete immutable-table implementation.
 
 ---
 
-## 💻 System
-
-Available functions:
+### System Information
 
 ```lua
 gethwid()
@@ -191,7 +199,7 @@ getfps()
 isgameactive()
 ```
 
-Mock values:
+Default values:
 
 ```text
 HWID: PLUME-HWID-MOCK-12345
@@ -199,70 +207,48 @@ FPS: 60
 Game Active: true
 ```
 
-Example:
-
-```lua
-print("HWID:", gethwid())
-print("FPS:", getfps())
-print("Active:", isgameactive())
-```
-
-> 🔐 The HWID is completely fictional and does not represent a real hardware identifier.
+These values are fictional and intended exclusively for testing.
 
 ---
 
-## 📁 Filesystem
-
-Available functions:
+### Filesystem
 
 ```lua
-writefile(filename, content)
-readfile(filename)
-appendfile(filename, content)
-isfile(filename)
-delfile(filename)
-makefolder(folderPath)
-delfolder(folderPath)
-isfolder(folderPath)
-listfiles(folderPath)
+writefile(path, content)
+readfile(path)
+appendfile(path, content)
+isfile(path)
+delfile(path)
+
+makefolder(path)
+delfolder(path)
+isfolder(path)
+listfiles(path)
 ```
 
 Example:
 
 ```lua
-writefile("config.txt", "Plume on top!")
+writefile("settings.txt", "PlumeRuntime")
 
-print(readfile("config.txt"))
+appendfile("settings.txt", " initialized")
 
-appendfile("config.txt", " Updated!")
-
-print(readfile("config.txt"))
+print(readfile("settings.txt"))
 ```
 
-Create a folder:
+Folder example:
 
 ```lua
-makefolder("PlumeFolder")
+makefolder("PlumeData")
 
-print(isfolder("PlumeFolder"))
+print(isfolder("PlumeData"))
 ```
 
-> ⚠️ Filesystem operations depend on the permissions of the Lua environment and operating system.
-
-### 📋 `listfiles()`
-
-The current implementation returns a simulated list:
-
-```text
-<folder>/config.json
-<folder>/script.lua
-```
+> Filesystem behavior depends on the host operating system, process permissions, and runtime implementation.
 
 ---
 
-## 🔐 Cryptography
-
-The project includes a Base64 encoder:
+### Encoding
 
 ```lua
 base64encode(data)
@@ -271,28 +257,26 @@ base64encode(data)
 Example:
 
 ```lua
-local encoded = base64encode("PlumeExecutor")
+local result = base64encode("PlumeRuntime")
 
-print(encoded)
+print(result)
 ```
 
-Result:
+Output:
 
 ```text
-UGx1bWVFeGVjdG9y
+UGx1bWVydW50aW1l
 ```
 
-> ℹ️ Base64 is an encoding format, not encryption.
+Base64 is an **encoding format**, not encryption.
 
 ---
 
-## 🌐 HTTP
-
-Available functions:
+### HTTP Mock
 
 ```lua
 request(options)
-httpget(url, customHeaders)
+httpget(url, headers)
 ```
 
 Example:
@@ -307,40 +291,25 @@ print(response.StatusCode)
 print(response.Body)
 ```
 
-The mock response looks like:
+Example response:
 
 ```lua
 {
     Success = true,
     StatusCode = 200,
     StatusMessage = "OK",
-    Headers = finalHeaders,
-    Body = "Conteúdo simulado baixado com sucesso"
+    Headers = {},
+    Body = "Simulated response body"
 }
 ```
 
-### 🧩 Generated headers
+No external network request is performed.
 
-The implementation can generate:
-
-```text
-User-Agent
-Roblox-Session-Id
-Roblox-Place-Id
-Roblox-Game-Id
-Exploit-Identifier
-Exploit-Guid
-Fingerprint
-Accept
-```
-
-> ⚠️ **No real HTTP request is performed.** The function simply returns a simulated response.
+The HTTP layer exists exclusively to test scripts that expect a request-style API.
 
 ---
 
-## 📋 Clipboard
-
-Available functions:
+### Clipboard
 
 ```lua
 setclipboard(text)
@@ -350,24 +319,16 @@ getclipboard()
 Example:
 
 ```lua
-setclipboard("Hello from Plume!")
+setclipboard("PlumeRuntime")
 
 print(getclipboard())
 ```
 
-The clipboard is stored in memory:
-
-```lua
-local _clipboardCache = ""
-```
-
-> ℹ️ This does **not** access the operating system's native clipboard.
+Clipboard contents are stored in memory and do not interact with the operating system clipboard.
 
 ---
 
-## 🎨 Drawing API
-
-A simplified Drawing API is provided:
+### Drawing
 
 ```lua
 Drawing.new(shapeType)
@@ -376,16 +337,17 @@ Drawing.new(shapeType)
 Example:
 
 ```lua
-local drawing = Drawing.new("Square")
+local object = Drawing.new("Square")
 
-print(drawing.Visible)
+object.Visible = true
+object.Position = {100, 100}
 
-drawing:Remove()
+print(object.Visible)
 
-print(drawing.Visible)
+object:Remove()
 ```
 
-Objects contain:
+Supported properties include:
 
 ```lua
 Visible
@@ -394,13 +356,11 @@ Position
 Remove()
 ```
 
-> ⚠️ No actual graphics are rendered on screen. This is only an API mock.
+Drawing objects are simulated and are not rendered to the screen.
 
 ---
 
-## 🖥️ RConsole
-
-Available functions:
+### Console
 
 ```lua
 rconsoleprint(text)
@@ -411,99 +371,43 @@ rconsolename(title)
 Example:
 
 ```lua
-rconsolename("Plume Executor Console")
-
-rconsoleprint("Hello from Plume!\n")
+rconsolename("PlumeRuntime Console")
+rconsoleprint("Runtime started\n")
 ```
 
-The implementation uses standard Lua I/O and operating-system commands where supported.
+Behavior depends on the host operating system and available console APIs.
 
 ---
 
-## 🧪 Built-in Tests
+## Testing
 
-The supplied script contains tests for every major API category:
+PlumeRuntime includes an integrated test suite covering the major API categories.
 
 ```lua
-info("--- testing logs ---")
-info("--- testing executor and identity ---")
-info("--- testing environment ---")
-info("--- testing filesystem ---")
-info("--- testing system and crypto ---")
-info("--- testing HTTP ---")
-info("--- testing clipboard ---")
-info("--- testing metatables ---")
-info("--- testing Drawing API ---")
-info("--- testing RConsole ---")
+info("Running PlumeRuntime tests...")
 ```
 
-A typical output will look similar to:
+Test categories include:
 
-```text
-[INFO] --- testing logs ---
-[INFO] Regular information message.
-[WARN] Warning message.
-[DEBUG] Debug variable: value = 42
-[SUCCESS] Operation completed successfully!
+- Logging
+- Executor information
+- Environment handling
+- Filesystem operations
+- System information
+- Encoding
+- HTTP mocks
+- Clipboard
+- Metatables
+- Drawing
+- Console utilities
 
-[INFO] --- testing executor and identity ---
-Current identity is 3
-
-[INFO] --- testing system and crypto ---
-HWID: PLUME-HWID-MOCK-12345
-FPS: 60
-Game Active: true
-Base64: UGx1bWVFeGVjdG9y
-
-[INFO] --- testing HTTP ---
-
-[INFO] --- testing clipboard ---
-
-[INFO] --- testing Drawing API ---
-
-[INFO] --- testing RConsole ---
-
-[ERRO] test error
-```
-
-Exact output may vary depending on the Lua implementation and operating system.
+Run the test file using the Lua interpreter supported by your environment.
 
 ---
 
-## ⚠️ Limitations
+## Compatibility
 
-### 🌐 HTTP
-
-`request()` does not connect to the internet.
-
-### 📋 Clipboard
-
-Clipboard operations are memory-only.
-
-### 🎨 Drawing
-
-Drawing objects are simulated and are not rendered.
-
-### 🔒 Readonly
-
-`setreadonly()` is simplified and does not implement a complete protected-table system.
-
-### 🎮 Roblox
-
-The project does not provide a Roblox execution engine. Objects such as:
-
-```lua
-game.PlaceId
-game.JobId
-```
-
-only work when the host environment provides them.
-
----
-
-## 🛠️ Compatibility
-
-The implementation primarily uses standard Lua APIs:
+The project primarily relies on standard Lua facilities:
 
 ```text
 io
@@ -513,568 +417,74 @@ table
 string
 ```
 
-Compatibility depends on the Lua implementation and the permissions available to the process.
+Compatibility may vary depending on:
+
+- Lua/Luau version
+- Operating system
+- Available standard libraries
+- Process permissions
+- Host runtime restrictions
 
 ---
 
-## 🎯 Recommended Uses
+## Limitations
 
-This project is useful for:
+PlumeRuntime intentionally does not provide:
 
-- 🧪 API compatibility testing
-- 🧰 Lua development
-- 🧱 Mock/prototype development
-- 📚 Learning Lua APIs
-- 🔍 Automated testing
-- 🖥️ Local demonstrations
-- 🔌 Testing scripts that depend on executor-style APIs
+- Roblox code execution
+- Roblox injection
+- Game manipulation
+- Real executor functionality
+- Real HTTP networking
+- Native clipboard access
+- Screen rendering
+- Complete read-only table protection
+- Guaranteed compatibility with every Lua implementation
 
----
-
-## 📜 License
-
-Add an appropriate license before distributing the project publicly.
+This project is designed to simulate interfaces, not reproduce an actual execution environment.
 
 ---
 
-# 🇧🇷 Português
+## Intended Use Cases
 
-## 📖 Sobre
+PlumeRuntime is suitable for:
 
-O **Plume Executor — Mock API** é uma implementação **simulada** de diversas APIs normalmente encontradas em ambientes de execução Lua/Roblox.
-
-O projeto foi desenvolvido para **testes locais, prototipagem, demonstrações e testes de compatibilidade**. Ele fornece implementações simuladas para identificação do executor, logs, ambientes Lua, filesystem, HTTP, clipboard, Drawing, console e outras funcionalidades.
-
-> ⚠️ **Aviso:** este projeto **não é um executor Roblox real**. Diversas APIs são propositalmente simuladas e não interagem com o Roblox ou com serviços externos.
-
----
-
-## ✨ Recursos
-
-- 🆔 Identificação do executor
-- 🧵 Simulação de identidade da thread
-- 📝 Sistema de logs
-- 🌎 Manipulação de ambientes Lua
-- 🔧 Utilitários de metatables
-- 🔒 Simulação de estado readonly
-- 💻 Informações de sistema simuladas
-- 📁 Operações de filesystem
-- 🔐 Codificação Base64
-- 🌐 Requisições HTTP simuladas
-- 📋 Clipboard em memória
-- 🎨 Drawing API simplificada
-- 🖥️ Utilitários RConsole
-- 🧪 Testes integrados das APIs
+- Local API development
+- Compatibility testing
+- Mock-driven development
+- Automated test environments
+- Lua education
+- Script prototyping
+- Runtime abstraction layers
+- Documentation examples
+- Offline demonstrations
 
 ---
 
-## 🆔 API do Executor
+## Project Status
 
-```lua
-identifyexecutor()
-getexecutorname()
-getthreadidentity()
-printidentity()
-checkcaller()
-luaversion()
-```
+**Status:** Experimental / Development
 
-### 📌 Valores simulados
-
-| Função | Valor |
-|---|---|
-| `identifyexecutor()` | `Plume`, `1.0.0` |
-| `getexecutorname()` | `Plume` |
-| `getthreadidentity()` | `3` |
-| `checkcaller()` | `true` |
-| `luaversion()` | `5.4` |
-
-Exemplo:
-
-```lua
-printidentity()
-
-print("Executor:", getexecutorname())
-print("Identity:", getthreadidentity())
-```
+The API may evolve as additional mock implementations and compatibility improvements are introduced.
 
 ---
 
-## 📝 Sistema de Logs
+## License
 
-Funções disponíveis:
+No license has been selected yet.
 
-```lua
-info(...)
-warn(...)
-log_debug(...)
-success(...)
-erro(...)
-```
-
-Exemplo:
-
-```lua
-info("Olá!")
-warn("Aviso!")
-log_debug("Informação de debug")
-success("Operação concluída!")
-erro("Algo deu errado!")
-```
-
-Os prefixos utilizados são:
-
-```text
-[INFO]
-[WARN]
-[DEBUG]
-[SUCCESS]
-[ERRO]
-```
+If you intend to distribute this project publicly, add an appropriate open-source license such as MIT, BSD-2-Clause, or Apache-2.0.
 
 ---
 
-## 🌎 Environment
+## Disclaimer
 
-```lua
-getgenv()
-getrenv()
-getreg()
-```
+PlumeRuntime is an independent, simulated runtime project.
 
-### `getgenv()`
-
-Retorna uma tabela dedicada para o ambiente:
-
-```lua
-local env = getgenv()
-
-env.MeuGlobal = "Plume System Loaded"
-
-print(getgenv().MeuGlobal)
-```
-
-### `getrenv()`
-
-Retorna `_G`:
-
-```lua
-print(getrenv() == _G)
-```
-
-### `getreg()`
-
-Tenta obter o registry do Lua através de:
-
-```lua
-debug.getregistry()
-```
-
-Caso a função não esteja disponível, uma tabela vazia é retornada.
+It is not affiliated with, endorsed by, or connected to Roblox Corporation.
 
 ---
 
-## 🔧 Metatables & Hooks
+## Project Motto
 
-Funções disponíveis:
-
-```lua
-getrawmetatable(tbl)
-setrawmetatable(tbl, newmt)
-setreadonly(tbl, readOnly)
-isreadonly(tbl)
-```
-
-Exemplo:
-
-```lua
-local minhaTabela = {}
-
-local meta = {
-    __index = {
-        teste = "Sucesso Metatable"
-    }
-}
-
-setrawmetatable(minhaTabela, meta)
-
-print(minhaTabela.teste)
-```
-
-### 🔒 Readonly
-
-```lua
-setreadonly(minhaTabela, true)
-
-print(isreadonly(minhaTabela))
-```
-
-> ⚠️ `isreadonly()` atualmente retorna `false` como placeholder. A implementação de readonly é simplificada.
-
----
-
-## 💻 Sistema
-
-Funções disponíveis:
-
-```lua
-gethwid()
-getfps()
-isgameactive()
-```
-
-Valores simulados:
-
-```text
-HWID: PLUME-HWID-MOCK-12345
-FPS: 60
-Game Active: true
-```
-
-Exemplo:
-
-```lua
-print("HWID:", gethwid())
-print("FPS:", getfps())
-print("Ativo:", isgameactive())
-```
-
-> 🔐 O HWID utilizado é completamente fictício e não representa um identificador real de hardware.
-
----
-
-## 📁 Filesystem
-
-Funções disponíveis:
-
-```lua
-writefile(filename, content)
-readfile(filename)
-appendfile(filename, content)
-isfile(filename)
-delfile(filename)
-makefolder(folderPath)
-delfolder(folderPath)
-isfolder(folderPath)
-listfiles(folderPath)
-```
-
-Exemplo:
-
-```lua
-writefile("config.txt", "Plume on top!")
-
-print(readfile("config.txt"))
-
-appendfile("config.txt", " Atualizado!")
-
-print(readfile("config.txt"))
-```
-
-Criando uma pasta:
-
-```lua
-makefolder("PlumeFolder")
-
-print(isfolder("PlumeFolder"))
-```
-
-> ⚠️ As operações de filesystem dependem das permissões do ambiente Lua e do sistema operacional.
-
-### 📋 `listfiles()`
-
-A implementação atual retorna uma lista simulada:
-
-```text
-<folder>/config.json
-<folder>/script.lua
-```
-
----
-
-## 🔐 Criptografia / Base64
-
-O projeto possui:
-
-```lua
-base64encode(data)
-```
-
-Exemplo:
-
-```lua
-local encoded = base64encode("PlumeExecutor")
-
-print(encoded)
-```
-
-Resultado:
-
-```text
-UGx1bWVFeGVjdG9y
-```
-
-> ℹ️ Base64 é uma forma de **codificação**, não de criptografia.
-
----
-
-## 🌐 HTTP
-
-Funções disponíveis:
-
-```lua
-request(options)
-httpget(url, customHeaders)
-```
-
-Exemplo:
-
-```lua
-local response = request({
-    Method = "GET",
-    Url = "https://example.com"
-})
-
-print(response.StatusCode)
-print(response.Body)
-```
-
-A resposta simulada possui o formato:
-
-```lua
-{
-    Success = true,
-    StatusCode = 200,
-    StatusMessage = "OK",
-    Headers = finalHeaders,
-    Body = "Conteúdo simulado baixado com sucesso"
-}
-```
-
-### 🧩 Headers
-
-A implementação pode gerar:
-
-```text
-User-Agent
-Roblox-Session-Id
-Roblox-Place-Id
-Roblox-Game-Id
-Exploit-Identifier
-Exploit-Guid
-Fingerprint
-Accept
-```
-
-> ⚠️ **Nenhuma requisição HTTP real é realizada.** A função apenas retorna uma resposta simulada.
-
----
-
-## 📋 Clipboard
-
-Funções disponíveis:
-
-```lua
-setclipboard(text)
-getclipboard()
-```
-
-Exemplo:
-
-```lua
-setclipboard("Olá do Plume!")
-
-print(getclipboard())
-```
-
-O conteúdo é armazenado em memória:
-
-```lua
-local _clipboardCache = ""
-```
-
-> ℹ️ Isso **não acessa o clipboard nativo** do Windows, Linux ou macOS.
-
----
-
-## 🎨 Drawing API
-
-Uma Drawing API simplificada está disponível:
-
-```lua
-Drawing.new(shapeType)
-```
-
-Exemplo:
-
-```lua
-local desenho = Drawing.new("Square")
-
-print(desenho.Visible)
-
-desenho:Remove()
-
-print(desenho.Visible)
-```
-
-Os objetos possuem:
-
-```lua
-Visible
-Color
-Position
-Remove()
-```
-
-> ⚠️ Nenhum desenho real é renderizado na tela. Trata-se apenas de um mock da API.
-
----
-
-## 🖥️ RConsole
-
-Funções disponíveis:
-
-```lua
-rconsoleprint(text)
-rconsoleclear()
-rconsolename(title)
-```
-
-Exemplo:
-
-```lua
-rconsolename("Plume Executor Console")
-
-rconsoleprint("Olá do Plume!\n")
-```
-
-A implementação utiliza APIs padrão de I/O do Lua e comandos do sistema operacional quando disponíveis.
-
----
-
-## 🧪 Testes Integrados
-
-O código fornecido possui testes para as principais categorias:
-
-```lua
-info("--- testando logs ---")
-info("--- testando executor e identity ---")
-info("--- testando environment ---")
-info("--- testando filesystem ---")
-info("--- testando system e crypto ---")
-info("--- testando HTTP ---")
-info("--- testando clipboard ---")
-info("--- testando metatables ---")
-info("--- testando Drawing API ---")
-info("--- testando RConsole ---")
-```
-
-Uma saída típica será semelhante a:
-
-```text
-[INFO] --- testando logs ---
-[INFO] Mensagem de informação regular.
-[WARN] Aviso de atenção no sistema.
-[DEBUG] Variável de depuração: valor = 42
-[SUCCESS] Operação concluída com sucesso!
-
-[INFO] --- testando executor e identity ---
-Current identity is 3
-
-[INFO] --- testando system e crypto ---
-HWID: PLUME-HWID-MOCK-12345
-FPS: 60
-Game Active: true
-Base64: UGx1bWVFeGVjdG9y
-
-[INFO] --- testando HTTP ---
-
-[INFO] --- testando clipboard ---
-
-[INFO] --- testando Drawing API ---
-
-[INFO] --- testando RConsole ---
-
-[ERRO] erro teste
-```
-
-A saída exata pode variar de acordo com a implementação Lua e o sistema operacional.
-
----
-
-## ⚠️ Limitações
-
-### 🌐 HTTP
-
-`request()` não se conecta à internet.
-
-### 📋 Clipboard
-
-O clipboard funciona somente em memória.
-
-### 🎨 Drawing
-
-Os objetos Drawing são simulados e não são renderizados.
-
-### 🔒 Readonly
-
-`setreadonly()` possui uma implementação simplificada e não fornece um sistema completo de proteção de tabelas.
-
-### 🎮 Roblox
-
-O projeto não fornece um mecanismo de execução do Roblox.
-
-Objetos como:
-
-```lua
-game.PlaceId
-game.JobId
-```
-
-somente funcionarão quando fornecidos pelo ambiente que estiver executando o código.
-
----
-
-## 🛠️ Compatibilidade
-
-O projeto utiliza principalmente APIs padrão do Lua:
-
-```text
-io
-os
-debug
-table
-string
-```
-
-A compatibilidade depende da implementação do Lua utilizada e das permissões disponíveis ao processo.
-
----
-
-## 🎯 Usos Recomendados
-
-Este projeto pode ser utilizado para:
-
-- 🧪 Testes de compatibilidade de APIs
-- 🧰 Desenvolvimento em Lua
-- 🧱 Criação de mocks e protótipos
-- 📚 Estudos de APIs Lua
-- 🔍 Testes automatizados
-- 🖥️ Demonstrações locais
-- 🔌 Testar scripts que dependem de APIs no estilo executor
-
----
-
-## 📜 Licença
-
-Adicione uma licença apropriada antes de distribuir o projeto publicamente.
-
----
-
-# ⭐ Plume
-
-**Mock it. Test it. Build it.**
-
-🇺🇸 English · 🇧🇷 Português
-
-> ⚠️ This project is intended as a simulated/local API environment and does not claim to provide a real Roblox executor.
+> **Mock the interface. Validate the behavior. Build with confidence.**
