@@ -12,6 +12,7 @@ print("Nome Direto:", getexecutorname())
 print("Call do Executor é válido?:", checkcaller())
 print(luaversion())
 print(runtimeversion())
+print(changelog())
 
 info("--- testando env (getgenv, getrenv, getreg) ---")
 local env = getgenv()
