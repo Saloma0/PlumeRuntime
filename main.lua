@@ -11,7 +11,7 @@ function getexecutorname()
 end
 
 local ThreadContext = {
-    identity = 3,
+    identity = 3, --change if you want
     history = {}
 }
 
