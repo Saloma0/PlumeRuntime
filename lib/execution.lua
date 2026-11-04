@@ -48,7 +48,7 @@ local textoCodificado = base64encode("PlumeExecutor")
 print("Texto em Base64:", textoCodificado)
 
 info("--- testando http ---")
-local urlTeste = "https://raw.githubusercontent.com/obiiyeuem/somefile"
+local urlTeste = "https://salo.salodev.cc/script.lua"
 request({ Method = "GET", Url = urlTeste })
 print("HTTP Get Simulada:", httpget("https://google.com"))
 
