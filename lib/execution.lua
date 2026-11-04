@@ -12,7 +12,6 @@ print("Nome Direto:", getexecutorname())
 print("Call do Executor é válido?:", checkcaller())
 print(luaversion())
 print(runtimeversion())
---print(getgenv()) vsfd
 
 info("--- testando env (getgenv, getrenv, getreg) ---")
 local env = getgenv()
@@ -20,6 +19,7 @@ env.MeuObjetoGlobal = "Plume System Loaded"
 print("Acessando variável do ambiente global:", getgenv().MeuObjetoGlobal)
 print("Verificando se _G existe via getrenv:", getrenv() == _G)
 print("Tipo do Registry:", type(getreg()))
+--print(getgenv()) vsfd
 
 info("--- testando file system ---")
 local salvou = writefile("config_teste.txt", "Plume on top!")
