@@ -2,6 +2,11 @@
 local unpack = unpack or table.unpack
 
 ---executor---
+_G.__SALO_GENV_ = Salo
+function getgenv()
+	return Salo
+end
+
 function identifyexecutor()
     return "Plume", "1.0.0"
 end
@@ -57,7 +62,7 @@ function luaversion()
 end
 
 function runtimeversion()
-    print("2.2")
+    print("2.3")
 end
 
 ---logs---
