@@ -57,7 +57,7 @@ function luaversion()
 end
 
 function runtimeversion()
-    print("3.0")
+    print("3.2")
 end
 
 function changelog()
@@ -314,7 +314,7 @@ local function buildHeaders(url, placeId, gameId, hwid)
                       string.find(url, "raw.githubusercontent.com")
 
     local sessionJson = '{"GameId":"' .. tostring(gameId) .. '","PlaceId":"' .. tostring(placeId) .. '"}'
-    local exploitName = isLuarmor and "Volt" or getexecutorname()
+    local exploitName = isLuarmor and "Plume" or getexecutorname()
 
     local headers = {
         ["User-Agent"] = exploitName,
