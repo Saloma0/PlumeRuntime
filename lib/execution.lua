@@ -12,7 +12,7 @@ print("Nome Direto:", getexecutorname())
 print("Call do Executor é válido?:", checkcaller())
 print(luaversion())
 print(runtimeversion())
-print(changelog())
+--print(changelog()) arrumar um ngc dps
 
 info("--- testando env (getgenv, getrenv, getreg) ---")
 local env = getgenv()
