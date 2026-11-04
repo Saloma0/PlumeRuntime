@@ -57,7 +57,7 @@ function luaversion()
 end
 
 function runtimeversion()
-    print("2.5")
+    print("2.6")
 end
 
 ---logs---
@@ -90,12 +90,12 @@ function erro(...)
 end
 
 ---env---
-local Salo = {}
+local Plume = {}
 
-_G.__SALO_GENV_ = Salo
+_G.__PLUME_GENV_ = Plume
 
 function getgenv()
-    return Salo
+    return Plume
 end
 function getrenv()
     return _G
