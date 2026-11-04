@@ -57,11 +57,11 @@ function luaversion()
 end
 
 function runtimeversion()
-    print("2.8")
+    print("3.0")
 end
 
 function changelog()
-    return "ChangeLogLua"
+    return "ChangeLogLua, 2026"
 end
 
 ---logs---
