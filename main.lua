@@ -2,11 +2,6 @@
 local unpack = unpack or table.unpack
 
 ---executor---
-_G.__SALO_GENV_ = Salo
-function getgenv()
-	return Salo
-end
-
 function identifyexecutor()
     return "Plume", "1.0.0"
 end
@@ -95,12 +90,13 @@ function erro(...)
 end
 
 ---env---
-local genv = {}
+local Salo = {}
+
+_G.__SALO_GENV_ = Salo
 
 function getgenv()
-    return genv
+    return Salo
 end
-
 function getrenv()
     return _G
 end
