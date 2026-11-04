@@ -10,6 +10,7 @@ printidentity()
 print("Nome e Versão do Executor:", identifyexecutor())
 print("Nome Direto:", getexecutorname())
 print("Call do Executor é válido?:", checkcaller())
+print(getgenv())
 print(luaversion())
 print(runtimeversion())
 
