@@ -3,7 +3,7 @@ local unpack = unpack or table.unpack
 
 ---executor---
 function identifyexecutor()
-    return "Plume", "1.0.0"
+    return "Plume", "3.0.0"
 end
 
 function getexecutorname()
